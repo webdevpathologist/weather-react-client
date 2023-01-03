@@ -15,21 +15,30 @@ if (process.env.NODE_ENV !== "production") {
 
 app.post("/weather", async (req, res) => {
   const city = req.body.name;
-  console.log(req.body);
-
-  console.log(
-    `${process.env.WEATHER_API_URL}?q=${city}&APPID=${process.env.WEATHER_API_KEY}&units=metric`
-  );
 
   const apiData = await fetch(
-    `${process.env.WEATHER_API_URL}?q=${city}&APPID=${process.env.WEATHER_API_KEY}&units=metric`
+    `${process.env.WEATHER_URL}?q=${city}&APPID=${process.env.WEATHER_KEY}&units=metric`
   )
-    .then((res) => res.data)
+    .then((res) => res.json())
     .catch((err) => {});
 
   if (!apiData) {
     res.status(404).send("problem with open weather api");
   } else {
+    
+    let weatherData ={};
+
+    // city, country name, temp, image, description, feels like
+
+    weatherData['city'] = apiData && apiData?.name;
+    weatherData['countrycode'] = apiData && apiData?.sys?.country;
+    weatherData['temp'] = apiData && apiData?.main?.temp;
+    weatherData['wtrimage'] = apiData && apiData?.weather[0]?.icon;
+    weatherData['wtrdesc'] = apiData && apiData?.weather[0]?.description;
+    weatherData['feelslike'] = apiData && apiData?.main?.feels_like;
+
+    res.status(200).send(weatherData);
+
   }
 });
 
