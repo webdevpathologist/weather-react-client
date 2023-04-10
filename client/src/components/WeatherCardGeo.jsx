@@ -22,7 +22,7 @@ export default function WeatherCardGeo(props) {
   return (
     <>
       {loading ? (
-        <div className="grid grid-cols-1 grid-rows-2 justify-center items-center content-center">
+        <div className="grid grid-cols-1 grid-rows-2 justify-items-center place-content-center">
           <div>
             <h1 className={`${theme ? theme.textColor : "bg-slate-800"}`}>
               {greetMsg}

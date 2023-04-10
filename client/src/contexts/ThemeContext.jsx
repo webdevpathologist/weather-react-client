@@ -64,8 +64,8 @@ export const ThemeProvider = ({ children }) => {
       return cssHash[2];
     } else {
       return {
-        bgColor: "bg-indigo-400",
-        cardColor: "bg-fuchsia-500",
+        bgColor: "bg-indigo-900/80",
+        cardColor: "bg-fuchsia-700",
         textColor: "text-indigo-50",
       };
     }
