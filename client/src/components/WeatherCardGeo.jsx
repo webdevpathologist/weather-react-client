@@ -60,7 +60,9 @@ export default function WeatherCardGeo(props) {
                     {" "}
                     {weather ? weather.name : ""}
                   </span>
-                  <sup class="py-0.5 px-1.5 rounded-lg text-sm text-white bg-emerald-900 font-xs uppercase align-top">{country}</sup>
+                  <sup className="py-0.5 px-1.5 rounded-lg text-sm text-white bg-emerald-900 font-xs uppercase align-top">
+                    {country}
+                  </sup>
                 </p>
 
                 {/* city temperature */}
@@ -83,7 +85,8 @@ export default function WeatherCardGeo(props) {
                     alt={weather && weather.weather[0].description}
                   />
                   <p className="tracking-wide">
-                    feels like {Math.round(weather && weather.main.feels_like)}°C 
+                    feels like {Math.round(weather && weather.main.feels_like)}
+                    °C
                     {/* with {weather && weather.weather[0].description} */}
                   </p>
                 </div>
@@ -116,24 +119,68 @@ export default function WeatherCardGeo(props) {
             )}
           </div>
           {/* city search box & unit selection */}
-          <div className="mt-4 flex items-center text-light justify-center text-black">
-            <input
-              name="city_name"
-              type="text"
-              className="rounded-lg w-full h-10 text-center border-2"
-              // placeholder={greetMsg}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyPress={(e) => searchCity(e)}
-            />
+          <div className="mt-4 flex items-center text-light justify-items-center text-black">
+            {/* <label
+              for="temperatureToggle"
+              class="relative h-8 w-14 cursor-pointer ml-2"
+            >
+              <input
+                type="checkbox"
+                id="temperatureToggle"
+                class="peer sr-only [&:checked_+_span_p[data-unchecked]]:hidden [&:checked_+_span_p[data-checked]]:block"
+                defaultChecked
+                onChange={}
+              />
 
-            {/* <label class="relative w-16 h-8 cursor-pointer">
-                    <input type="checkbox" class="sr-only peer" />
-        
-                    <span class="absolute inset-0 bg-blue-400 rounded-full transition peer-checked:bg-blue-600">C</span>
-        
-                    <span class="absolute inset-0 w-6 h-6 m-1 bg-white rounded-full transition peer-checked:translate-x-8">F</span>
-                  </label> */}
+              <span class="absolute inset-0 z-10 m-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-zinc-600 transition peer-checked:translate-x-6 peer-checked:text-indigo-600">
+                <p
+                  data-unchecked
+                  className={`text-sm font-xs font-thin align-baseline flex items-center justify-center text-center`}
+                >
+                  <sup className=" bg-emerald-900  align-top">o</sup>
+                  <span className="flex-col align-baseline tracking-widest">
+                    F
+                  </span>
+                </p>
+
+                <p
+                  data-checked
+                  className={`hidden text-sm font-xs font-thin align-baseline items-center justify-center text-center`}
+                >
+                  <sup className="">o</sup>
+                  <span className="flex-col align-baseline tracking-widest">
+                    C
+                  </span>
+                </p>
+              </span>
+
+              <span class="absolute inset-0 rounded-full bg-gray-300 transition peer-checked:bg-indigo-500"></span>
+            </label> */}
+
+            <label for="city-box" className="cursor-pointer w-full h-full">
+              {/*w-4/6 h-4/6*/}
+              <input
+                id="city-box"
+                name="city_name"
+                type="text"
+                className="rounded-lg text-center border-2 p-1.5 w-full h-full"
+                // placeholder={greetMsg}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyPress={(e) => searchCity(e)}
+              />
+            </label>
+
+            {/* 
+            <label for="submit" className="cursor-pointer w-1/6 h-full">
+              <button
+                id="submit"
+                name="city_name"
+                type="submit"
+                className="rounded-lg text-center border-2 w-full h-full"
+                onSubmit={(e) => searchCity(e)}
+              >🔎</button>
+            </label> */}
           </div>
         </div>
       )}

@@ -51,13 +51,13 @@ app.post("/unsplash", async (req, res) => {
 
   if (!apiData) {
     let errorObject = {
-      msg:"problem with unsplash api",
-      url:"https://www.bing.com/th?id=OHR.MidsummerEve_EN-IN5378541716_1920x1080.jpg&rf=LaDigue_1920x1080.jpg"
-    }
+      msg: "problem with unsplash api",
+      url: "https://www.bing.com/th?id=OHR.MidsummerEve_EN-IN5378541716_1920x1080.jpg&rf=LaDigue_1920x1080.jpg",
+    };
     res.status(404).send(errorObject);
   } else {
     let unsplashData = {};
-    unsplashData['url'] = apiData && apiData?.urls?.regular;
+    unsplashData["url"] = apiData && apiData?.urls?.regular;
 
     res.status(200).send(unsplashData);
   }

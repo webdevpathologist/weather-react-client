@@ -25,7 +25,6 @@ export const UnsplashProvider = ({ children }) => {
   };
 
   useEffect(() => {
-
     async function fetchImage() {
       const imageData = {
         urls: {

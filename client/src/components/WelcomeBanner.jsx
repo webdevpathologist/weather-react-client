@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { fetchWeatherCity,fetchUnsplashImage } from "../api/fetchWeatherUnsplash";
+import {
+  fetchWeatherCity,
+  fetchUnsplashImage,
+} from "../api/fetchWeatherUnsplash";
 
 export default function WelcomeBanner(props) {
   const [query, setQuery] = useState("");
@@ -128,8 +131,11 @@ export default function WelcomeBanner(props) {
     //   </div>
     // </div>
     <div className="bg-slate-800 font-mono text-white p-4 m-2 justify-items-center">
-          <h1 className="text-bold text-3xl">Welcome to Whether</h1>
-          <p className="text-light text-sm">We are trying access your device's location to show the appropriate Weather. Please allow the prompt</p>
-        </div>
+      <h1 className="text-bold text-3xl">Welcome to Whether</h1>
+      <p className="text-light text-sm">
+        We are trying access your device's location to show the appropriate
+        Weather. Please allow the prompt
+      </p>
+    </div>
   );
 }

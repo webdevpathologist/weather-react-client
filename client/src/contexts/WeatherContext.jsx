@@ -1,15 +1,14 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
-import toast,{Toaster} from 'react-hot-toast';
 
 export const WeatherContext = createContext({
   weather: null,
   setWeather: () => null,
   loading: null,
   setLoading: () => null,
-  query:null,
+  query: null,
   setQuery: () => null,
-  greetMsg: null, 
+  greetMsg: null,
   setGreetMsg: () => null,
   searchCity: () => null,
   msg: "Getting Geo Location",
@@ -29,20 +28,23 @@ export const WeatherProvider = ({ children }) => {
   const fetchWeatherCity = async (query) => {
     setLoading(true);
 
-    const data = await axios.get(URL, {
-      params: {
-        q: query,
-        units: "metric",
-        APPID: API_KEY,
-      },
-    }).then(res=>{
-      // console.log(res.data);
-      setLoading(false);
-      return res.data
-    }).catch(err=> {
-      setLoading(false);
-      return {}
-    });
+    const data = await axios
+      .get(URL, {
+        params: {
+          q: query,
+          units: "metric",
+          APPID: API_KEY,
+        },
+      })
+      .then((res) => {
+        // console.log(res.data);
+        setLoading(false);
+        return res.data;
+      })
+      .catch((err) => {
+        setLoading(false);
+        return {};
+      });
 
     return data;
   };
@@ -68,19 +70,17 @@ export const WeatherProvider = ({ children }) => {
     if (e.key === "Enter") {
       setGreetMsg("Fetching Weather Data");
       const data = await fetchWeatherCity(query);
-      
-      if(data && Object.keys(data).length>0){
 
+      if (data && Object.keys(data).length > 0) {
         setWeather(data);
         setGreetMsg("Hope it is correct 👍");
         setQuery("");
         // e.target.blur();
-      }else{
+      } else {
         setGreetMsg("Sorry, We couldn't find your city 🥴");
+        navigator.vibrate([500, 50, 100]);
         setQuery("");
       }
-
-      
     }
   };
 
@@ -126,5 +126,7 @@ export const WeatherProvider = ({ children }) => {
     fetchWeatherGeo,
   };
 
-  return <WeatherContext.Provider value={value}>{children}</WeatherContext.Provider>;
+  return (
+    <WeatherContext.Provider value={value}>{children}</WeatherContext.Provider>
+  );
 };
