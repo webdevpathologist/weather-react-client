@@ -4,25 +4,46 @@ import { WeatherContext } from "../contexts/WeatherContext";
 import { UnsplashContext } from "../contexts/UnsplashContext";
 import { ThemeContext } from "../contexts/ThemeContext";
 import Loader from "./Loader";
+import { clearCities, getCities } from "../utils/localStorage";
+import {RiRefreshFill} from 'react-icons/ri'
 
 export default function WeatherCardGeo(props) {
-  const { weather, query, setQuery, greetMsg, searchCity, loading } =
-    useContext(WeatherContext);
+  const {
+    weather,
+    query,
+    setQuery,
+    greetMsg,
+    searchCity,
+    loading,
+    setGreetMsg,
+  } = useContext(WeatherContext);
 
   const [country, setCountry] = useState("IN");
+  const [cities, setCities] = useState([]);
 
   const { imageURL } = useContext(UnsplashContext);
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     setCountry(weather && weather.sys && weather.sys.country);
+    setCities(getCities());
   }, [weather]);
+
+  useEffect(() => {
+    const greetHide = setInterval(() => {
+      setGreetMsg("");
+    }, 3000);
+
+    return () => {
+      clearTimeout(greetHide);
+    };
+  }, [greetMsg]);
 
   // console.log(weather.weather[0].description,country);
   return (
     <>
       {loading ? (
-        <div className="grid grid-cols-1 grid-rows-2 justify-items-center place-content-center">
+        <div className="grid grid-cols-1 grid-rows-2 justify-items-center place-content-center ">
           <div>
             <h1 className={`${theme ? theme.textColor : "bg-slate-800"}`}>
               {greetMsg}
@@ -33,7 +54,7 @@ export default function WeatherCardGeo(props) {
           </div>
         </div>
       ) : (
-        <div>
+        <div className="">
           {weather && weather.main && weather.sys && (
             <div
               className={`relative overflow-hidden group rounded-2xl ${theme.textColor}  ${theme.cardColor} flex items-center justify-center lg:mt-16 drop-shadow-xl`}
@@ -157,30 +178,52 @@ export default function WeatherCardGeo(props) {
               <span class="absolute inset-0 rounded-full bg-gray-300 transition peer-checked:bg-indigo-500"></span>
             </label> */}
 
-            <label for="city-box" className="cursor-pointer w-full h-full">
+            <label htmlFor="city-box" className="cursor-pointer w-5/6 h-5/6">
               {/*w-4/6 h-4/6*/}
               <input
                 id="city-box"
                 name="city_name"
                 type="text"
-                className="rounded-lg text-center border-2 p-1.5 w-full h-full"
-                // placeholder={greetMsg}
+                className="bg-zinc-200 rounded-lg text-center border-2 p-1.5 w-full h-full"
+                placeholder={"Enter Your City & Press Enter"}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyPress={(e) => searchCity(e)}
               />
             </label>
 
-            {/* 
-            <label for="submit" className="cursor-pointer w-1/6 h-full">
+            <label htmlFor="submit" className="cursor-pointer w-1/6 h-full">
               <button
                 id="submit"
                 name="city_name"
-                type="submit"
-                className="rounded-lg text-center border-2 w-full h-full"
-                onSubmit={(e) => searchCity(e)}
+                className="ml-1 py-1.5 px-1 bg-zinc-200 rounded-lg text-center border-2 w-full h-full"
+                onClick={() => searchCity(
+                  {
+                    from:"submit"
+                  })}
               >🔎</button>
+            </label>
+
+            {/* <label htmlFor="submit" className="cursor-pointer w-1/6 h-full items-center justify-center ">
+              <button
+                id="submit"
+                name="city_name"
+                className="ml-1 py-1.5 px-1 bg-zinc-200 rounded-lg items-center justify-center border-2 w-full h-full"
+                onClick={() =>clearCities(()=>{setCities(getCities());})}
+              ><RiRefreshFill size={24}/></button>
             </label> */}
+          </div>
+          {/* history of last 10 cities tag */}
+          <div className="mt-4 grid grid-cols-3 gap-3 items-center text-light justify-items-center text-black">
+            {
+              cities.map((el,index)=>(
+                  <button key={index} className={` p-2 w-full ${theme.buttonColor}  ${theme.buttonTextColor} capitalize rounded-lg`} onClick={() => searchCity(
+                    {
+                      from:"history",
+                      city:el
+                    })}>{el}</button>
+              ))
+            }
           </div>
         </div>
       )}

@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
+import { saveCity } from "../utils/localStorage";
+
 export const WeatherContext = createContext({
   weather: null,
   setWeather: () => null,
@@ -20,7 +22,7 @@ export const WeatherProvider = ({ children }) => {
   const [weather, setWeather] = useState({});
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  const [greetMsg, setGreetMsg] = useState("Enter City Name");
+  const [greetMsg, setGreetMsg] = useState("");
   let msg = "Getting Geo Location";
   const URL = "https://api.openweathermap.org/data/2.5/weather";
   const API_KEY = "d36f779355b1fb6850ea4e1ab7126a32";
@@ -66,19 +68,21 @@ export const WeatherProvider = ({ children }) => {
   };
 
   const searchCity = async (e) => {
-    // console.log(e);
-    if (e.key === "Enter") {
+    console.log(e);
+    if (e.key === "Enter" || e.from === "history" || e.from === "submit") {
       setGreetMsg("Fetching Weather Data");
-      const data = await fetchWeatherCity(query);
+      const city = e.from === "history" ? e.city : query;
+      const data = await fetchWeatherCity(city);
 
       if (data && Object.keys(data).length > 0) {
         setWeather(data);
+        saveCity(city);
         setGreetMsg("Hope it is correct 👍");
         setQuery("");
         // e.target.blur();
       } else {
         setGreetMsg("Sorry, We couldn't find your city 🥴");
-        navigator.vibrate([500, 50, 100]);
+        navigator.vibrate([500, 50, 300]);
         setQuery("");
       }
     }
@@ -103,7 +107,6 @@ export const WeatherProvider = ({ children }) => {
         },
         () => {
           setLoading(false);
-          setGreetMsg("Enter Nearby City name below");
           setQuery("");
         },
         geoOptions
