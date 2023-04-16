@@ -16,10 +16,13 @@ export const WeatherContext = createContext({
   msg: "Getting Geo Location",
   fetchWeatherCity: () => null,
   fetchWeatherGeo: () => null,
+  units:null,
+  changeUnits: () => null,
 });
 
 export const WeatherProvider = ({ children }) => {
   const [weather, setWeather] = useState({});
+  const [units, setUnits] = useState("metric");
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [greetMsg, setGreetMsg] = useState("");
@@ -34,7 +37,7 @@ export const WeatherProvider = ({ children }) => {
       .get(URL, {
         params: {
           q: query,
-          units: "metric",
+          units: units,
           APPID: API_KEY,
         },
       })
@@ -58,7 +61,7 @@ export const WeatherProvider = ({ children }) => {
       params: {
         lat: lat,
         lon: lon,
-        units: "metric",
+        units: units,
         APPID: API_KEY,
       },
     });
@@ -87,6 +90,12 @@ export const WeatherProvider = ({ children }) => {
       }
     }
   };
+
+  const changeUnits=(e)=>{
+    const selectedUnit = e.target.checked ? "metric" : "imperial";
+    setUnits(()=>selectedUnit);
+    setGreetMsg("Search the city again to reflect your selection");
+   }
 
   useEffect(() => {
     const geoOptions = {
@@ -127,6 +136,8 @@ export const WeatherProvider = ({ children }) => {
     msg,
     fetchWeatherCity,
     fetchWeatherGeo,
+    units,
+    changeUnits,
   };
 
   return (

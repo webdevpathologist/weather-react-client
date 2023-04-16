@@ -5,7 +5,7 @@ import { UnsplashContext } from "../contexts/UnsplashContext";
 import { ThemeContext } from "../contexts/ThemeContext";
 import Loader from "./Loader";
 import { clearCities, getCities } from "../utils/localStorage";
-import {RiRefreshFill} from 'react-icons/ri'
+import {RiDeleteBin6Fill} from 'react-icons/ri';
 
 export default function WeatherCardGeo(props) {
   const {
@@ -16,6 +16,8 @@ export default function WeatherCardGeo(props) {
     searchCity,
     loading,
     setGreetMsg,
+    units,
+    changeUnits,
   } = useContext(WeatherContext);
 
   const [country, setCountry] = useState("IN");
@@ -92,7 +94,7 @@ export default function WeatherCardGeo(props) {
                     className={`text-9xl font-bold ${theme.textColor} tracking-wide align-bottom`}
                   >
                     {Math.round(weather && weather.main.temp)}
-                    <sup className="text-2xl  align-top">°C</sup>
+                    <sup className="text-2xl  align-top">{units==='metric'? '°C' : '°F'}</sup>
                   </h1>
                 </div>
 
@@ -107,7 +109,7 @@ export default function WeatherCardGeo(props) {
                   />
                   <p className="tracking-wide">
                     feels like {Math.round(weather && weather.main.feels_like)}
-                    °C
+                    {units==='metric'? '°C' : '°F'}
                     {/* with {weather && weather.weather[0].description} */}
                   </p>
                 </div>
@@ -141,24 +143,52 @@ export default function WeatherCardGeo(props) {
           </div>
           {/* city search box & unit selection */}
           <div className="mt-4 flex items-center text-light justify-items-center text-black">
-            {/* <label
-              for="temperatureToggle"
-              class="relative h-8 w-14 cursor-pointer ml-2"
-            >
+            <label htmlFor="clear" className="cursor-pointer w-9 h-full items-center justify-center mr-3">
+              <button
+                id="clear"
+                name="city_history_clear"
+                className="ml-1 py-1.5 px-1 bg-zinc-100 rounded-lg items-center justify-center border-2 w-full h-full"
+                onClick={() =>clearCities(()=>{setCities(getCities());})}
+              ><RiDeleteBin6Fill size={22} className='text-red-500/70'/></button>
+            </label>
+
+            <label htmlFor="city-box" className="cursor-pointer w-5/6 h-4/6 flex justify-end items-center relative">
+              <input
+                id="city-box"
+                name="city_name"
+                type="text"
+                className="bg-zinc-100 rounded-lg text-center border-2 p-1.5 w-full h-full"
+                placeholder={"Enter Your City"}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyPress={(e) => searchCity(e)}
+              />
+              <button
+                id="submit"
+                name="city_name"
+                className="absolute mr-2 w-10"
+                onClick={() => searchCity(
+                  {
+                    from:"submit"
+                  })}
+              >🔎</button>
+            </label>
+
+            <label htmlFor="temperatureToggle" className="relative h-8 w-16 md:w-14 cursor-pointer ml-2">
               <input
                 type="checkbox"
                 id="temperatureToggle"
-                class="peer sr-only [&:checked_+_span_p[data-unchecked]]:hidden [&:checked_+_span_p[data-checked]]:block"
-                defaultChecked
-                onChange={}
+                className="peer sr-only [&:checked_+_span_p[data-unchecked]]:hidden [&:checked_+_span_p[data-checked]]:block"
+                checked={units==='metric'? true : false}
+                onChange={(e)=>changeUnits(e)}
               />
 
-              <span class="absolute inset-0 z-10 m-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-zinc-600 transition peer-checked:translate-x-6 peer-checked:text-indigo-600">
+              <span className="absolute inset-0 z-10 m-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-zinc-600 transition peer-checked:translate-x-6 peer-checked:text-indigo-600/60">
                 <p
                   data-unchecked
                   className={`text-sm font-xs font-thin align-baseline flex items-center justify-center text-center`}
                 >
-                  <sup className=" bg-emerald-900  align-top">o</sup>
+                  <sup className="align-top">o</sup>
                   <span className="flex-col align-baseline tracking-widest">
                     F
                   </span>
@@ -176,44 +206,10 @@ export default function WeatherCardGeo(props) {
               </span>
 
               <span class="absolute inset-0 rounded-full bg-gray-300 transition peer-checked:bg-indigo-500"></span>
-            </label> */}
-
-            <label htmlFor="city-box" className="cursor-pointer w-5/6 h-5/6">
-              {/*w-4/6 h-4/6*/}
-              <input
-                id="city-box"
-                name="city_name"
-                type="text"
-                className="bg-zinc-200 rounded-lg text-center border-2 p-1.5 w-full h-full"
-                placeholder={"Enter Your City & Press Enter"}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyPress={(e) => searchCity(e)}
-              />
             </label>
 
-            <label htmlFor="submit" className="cursor-pointer w-1/6 h-full">
-              <button
-                id="submit"
-                name="city_name"
-                className="ml-1 py-1.5 px-1 bg-zinc-200 rounded-lg text-center border-2 w-full h-full"
-                onClick={() => searchCity(
-                  {
-                    from:"submit"
-                  })}
-              >🔎</button>
-            </label>
-
-            {/* <label htmlFor="submit" className="cursor-pointer w-1/6 h-full items-center justify-center ">
-              <button
-                id="submit"
-                name="city_name"
-                className="ml-1 py-1.5 px-1 bg-zinc-200 rounded-lg items-center justify-center border-2 w-full h-full"
-                onClick={() =>clearCities(()=>{setCities(getCities());})}
-              ><RiRefreshFill size={24}/></button>
-            </label> */}
           </div>
-          {/* history of last 10 cities tag */}
+          {/* history of last 6 cities tag */}
           <div className="mt-4 grid grid-cols-3 gap-3 items-center text-light justify-items-center text-black">
             {
               cities.map((el,index)=>(
