@@ -5,7 +5,6 @@ import { UnsplashContext } from "../contexts/UnsplashContext";
 import { ThemeContext } from "../contexts/ThemeContext";
 import Loader from "./Loader";
 import { clearCities, getCities } from "../utils/localStorage";
-import {RiDeleteBin6Fill} from 'react-icons/ri';
 
 export default function WeatherCardGeo(props) {
   const {
@@ -27,7 +26,7 @@ export default function WeatherCardGeo(props) {
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
-    setCountry(weather && weather.sys && weather.sys.country);
+    setCountry(weather && weather.country);
     setCities(getCities());
   }, [weather]);
 
@@ -41,7 +40,7 @@ export default function WeatherCardGeo(props) {
     };
   }, [greetMsg]);
 
-  // console.log(weather.weather[0].description,country);
+
   return (
     <>
       {loading ? (
@@ -57,7 +56,7 @@ export default function WeatherCardGeo(props) {
         </div>
       ) : (
         <div className="">
-          {weather && weather.main && weather.sys && (
+          {weather &&  (
             <div
               className={`relative overflow-hidden group rounded-2xl ${theme.textColor}  ${theme.cardColor} flex items-center justify-center lg:mt-16 drop-shadow-xl`}
             >
@@ -81,7 +80,7 @@ export default function WeatherCardGeo(props) {
 
                   <span className="mr-1 p-1 text-4xl flex-col align-baseline tracking-widest font-semibold">
                     {" "}
-                    {weather ? weather.name : ""}
+                    {weather ? weather.city : ""}
                   </span>
                   <sup className="py-0.5 px-1.5 rounded-lg text-sm text-white bg-emerald-900 font-xs uppercase align-top">
                     {country}
@@ -93,7 +92,7 @@ export default function WeatherCardGeo(props) {
                   <h1
                     className={`text-9xl font-bold ${theme.textColor} tracking-wide align-bottom`}
                   >
-                    {Math.round(weather && weather.main.temp)}
+                    {(weather && units==='metric') ? Math.round(weather.temp_c) :  Math.round(weather.temp_f)}
                     <sup className="text-2xl  align-top">{units==='metric'? '°C' : '°F'}</sup>
                   </h1>
                 </div>
@@ -103,14 +102,14 @@ export default function WeatherCardGeo(props) {
                   <img
                     className="w-16 h-16 align-top float-right"
                     src={`https://openweathermap.org/img/wn/${
-                      weather && weather.weather && weather.weather[0].icon
+                      weather && weather.icon
                     }@2x.png`}
-                    alt={weather && weather.weather[0].description}
+                    alt={weather && weather.description}
                   />
                   <p className="tracking-wide">
-                    feels like {Math.round(weather && weather.main.feels_like)}
+                    feels like {(weather && units==='metric') ? Math.round(weather.temp_feels_c) :  Math.round(weather.temp_feels_f)}
                     {units==='metric'? '°C' : '°F'}
-                    {/* with {weather && weather.weather[0].description} */}
+                    {/* with {weather && weather.description} */}
                   </p>
                 </div>
               </div>
@@ -149,7 +148,7 @@ export default function WeatherCardGeo(props) {
                 name="city_history_clear"
                 className="ml-1 py-1.5 px-1 bg-zinc-100 rounded-lg items-center justify-center border-2 w-full h-full"
                 onClick={() =>clearCities(()=>{setCities(getCities());})}
-              ><RiDeleteBin6Fill size={22} className='text-red-500/70'/></button>
+              >🔄️</button>
             </label>
 
             <label htmlFor="city-box" className="cursor-pointer w-5/6 h-4/6 flex justify-end items-center relative">
@@ -205,7 +204,7 @@ export default function WeatherCardGeo(props) {
                 </p>
               </span>
 
-              <span class="absolute inset-0 rounded-full bg-gray-300 transition peer-checked:bg-indigo-500"></span>
+              <span className="absolute inset-0 rounded-full bg-gray-300 transition peer-checked:bg-indigo-500"></span>
             </label>
 
           </div>
@@ -213,11 +212,11 @@ export default function WeatherCardGeo(props) {
           <div className="mt-4 grid grid-cols-3 gap-3 items-center text-light justify-items-center text-black">
             {
               cities.map((el,index)=>(
-                  <button key={index} className={` p-2 w-full ${theme.buttonColor}  ${theme.buttonTextColor} capitalize rounded-lg`} onClick={() => searchCity(
+                  <button key={index} className={` p-2 w-full ${theme.buttonColor}  ${theme.buttonTextColor} capitalize rounded-lg transition-full duration-300 hover:bg-slate-600 hover:text-zinc-200`} onClick={() => searchCity(
                     {
                       from:"history",
-                      city:el
-                    })}>{el}</button>
+                      data:el
+                    })}>{el.city}</button>
               ))
             }
           </div>

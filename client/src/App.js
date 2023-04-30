@@ -21,10 +21,10 @@ function App() {
         theme ? theme.bgColor : "bg-slate-800"
       } w-screen h-screen font-poppins`}
     >
-      <div className="grid lg:grid-cols-3 lg:p-2 lg:mx-auto sm:grids-cols-1 p-12 sm:p-2  justify-items-center place-content-center  w-full h-full ">
-        <div className="lg:col-start-2 lg:col-span-1 sm:col-span-1 sm:p-4 sm:mx-4  w-full h-full ">
+      <div className="grid lg:grid-cols-3 p-2 lg:mx-auto sm:grids-cols-1 justify-items-center place-content-center w-full h-full">
+        <div className="lg:col-start-2 lg:col-span-1 sm:col-span-1 sm:p-4 sm:mx-4 w-full h-full">
           {loading == null || loading === true ? (
-            <div className="grid grid-cols-1 grid-rows-2 justify-items-center place-content-center  w-full h-full ">
+            <div className="grid grid-cols-1 grid-rows-2 justify-items-center place-content-center w-full h-full">
               <div>
                 <h1 className={`${theme ? theme.textColor : "bg-slate-800"}`}>
                   {msg}

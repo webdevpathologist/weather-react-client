@@ -51,7 +51,7 @@ export const ThemeProvider = ({ children }) => {
     ];
 
     const temp = weather
-      ? weather.weather && weather.weather[0] && weather.weather[0].id
+      ? weather.id
       : 800;
 
     if (temp === 800) {

@@ -1,26 +1,33 @@
-export const saveCity=(city)=>{
-    const cityHistory = localStorage.getItem('cities') ? JSON.parse(localStorage.getItem('cities')) : [];
-    if(!cityHistory.includes(city) && city!==""){
-        cityHistory.push(city);
-    }
-    if(cityHistory.length>=7)
-    {
-        cityHistory.shift();
-    }
-    localStorage.setItem('cities',JSON.stringify(cityHistory));
-}
+export const saveCity = (cityData) => {
+  const temp = localStorage.getItem("cities")
+    ? JSON.parse(localStorage.getItem("cities"))
+    : [];
 
-export const getCities=()=>{
-    const cities = localStorage.getItem('cities') ? JSON.parse(localStorage.getItem('cities')) : [];
-    return cities;
-}
+  const cityHistory = temp.filter((el) => el.city !== cityData.city);
+  cityData["timestamp"] = Date.now();
+  cityHistory.push(cityData);
 
-export const getCity=()=>{
-    const cities = localStorage.getItem('cities') ? JSON.parse(localStorage.getItem('cities')) : [];
-    return cities;
-}
+  if (cityHistory.length >= 7) {
+    cityHistory.shift();
+  }
+  localStorage.setItem("cities", JSON.stringify(cityHistory));
+};
 
-export const clearCities=(callback)=>{
-    localStorage.removeItem('cities');
-    callback();
-}
+export const getCities = () => {
+  const cities = localStorage.getItem("cities")
+    ? JSON.parse(localStorage.getItem("cities"))
+    : [];
+  return cities;
+};
+
+export const getCity = () => {
+  const cities = localStorage.getItem("cities")
+    ? JSON.parse(localStorage.getItem("cities"))
+    : [];
+  return cities;
+};
+
+export const clearCities = (callback) => {
+  localStorage.removeItem("cities");
+  callback();
+};

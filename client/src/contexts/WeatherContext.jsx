@@ -16,7 +16,7 @@ export const WeatherContext = createContext({
   msg: "Getting Geo Location",
   fetchWeatherCity: () => null,
   fetchWeatherGeo: () => null,
-  units:null,
+  units: null,
   changeUnits: () => null,
 });
 
@@ -37,7 +37,7 @@ export const WeatherProvider = ({ children }) => {
       .get(URL, {
         params: {
           q: query,
-          units: units,
+          units: 'metric',
           APPID: API_KEY,
         },
       })
@@ -61,7 +61,7 @@ export const WeatherProvider = ({ children }) => {
       params: {
         lat: lat,
         lon: lon,
-        units: units,
+        units: 'metric',
         APPID: API_KEY,
       },
     });
@@ -71,31 +71,59 @@ export const WeatherProvider = ({ children }) => {
   };
 
   const searchCity = async (e) => {
-    console.log(e);
-    if (e.key === "Enter" || e.from === "history" || e.from === "submit") {
-      setGreetMsg("Fetching Weather Data");
-      const city = e.from === "history" ? e.city : query;
-      const data = await fetchWeatherCity(city);
+    
+    if (
+      e.from === "history" &&
+      (Date.now() - e.data.timestamp < (1000 * 60 * 60))
+    ) {
 
-      if (data && Object.keys(data).length > 0) {
-        setWeather(data);
-        saveCity(city);
-        setGreetMsg("Hope it is correct 👍");
-        setQuery("");
-        // e.target.blur();
-      } else {
-        setGreetMsg("Sorry, We couldn't find your city 🥴");
-        navigator.vibrate([500, 50, 300]);
-        setQuery("");
-      }
+      setGreetMsg("Showing Cached Data");
+      setWeather(()=>e.data);
+      return null;
     }
+
+    if(e.key==='Enter' || e.from==='submit' || (
+      e.from === "history" &&
+      (Date.now() - e.data.timestamp > (1000 * 60 * 60))
+    )){
+
+    const city = e.from === "history" ? e.data.city : query;
+    setGreetMsg("Fetching Weather Data");
+    const data = await fetchWeatherCity(city);
+
+    if (data && Object.keys(data).length > 0) {
+      let weatherData = {};
+      weatherData["city"] = data.name;
+      weatherData["country"] = data && data.sys && data.sys.country;
+      weatherData["temp_c"] = Math.round(data.main.temp);
+      weatherData["temp_f"] = Math.round(data.main.temp * 1.8 + 32);
+      weatherData["temp_feels_c"] = Math.round(data.main.feels_like);
+      weatherData["temp_feels_f"] = Math.round(data.main.feels_like * 1.8 + 32);
+      weatherData["icon"] = data.weather[0].icon;
+      weatherData["id"] = data.weather[0].id;
+      weatherData["desc"] = data.weather[0].description;
+
+      setWeather(weatherData);
+      saveCity(weatherData);
+      setGreetMsg("Hope it is correct 👍");
+      setQuery("");
+      // e.target.blur();
+    } else {
+      setGreetMsg("Sorry, We couldn't find your city 🥴");
+      navigator.vibrate([500, 50, 300]);
+      setQuery("");
+    }
+
+    }
+
+    return null;
   };
 
-  const changeUnits=(e)=>{
+  const changeUnits = (e) => {
     const selectedUnit = e.target.checked ? "metric" : "imperial";
-    setUnits(()=>selectedUnit);
-    setGreetMsg("Search the city again to reflect your selection");
-   }
+    setUnits(() => selectedUnit);
+    setGreetMsg(`Unit Changed to ${units !== "imperial" ? "°F" : "°C"}`);
+  };
 
   useEffect(() => {
     const geoOptions = {
@@ -111,11 +139,25 @@ export const WeatherProvider = ({ children }) => {
           const { latitude, longitude } = position.coords;
 
           const data = await fetchWeatherGeo(latitude, longitude);
+          let weatherData = {};
+          weatherData["city"] = data.name;
+          weatherData["country"] = data && data.sys && data.sys.country;
+          weatherData["temp_c"] = Math.round(data.main.temp);
+          weatherData["temp_f"] = Math.round(data.main.temp * 1.8 + 32);
+          weatherData["temp_feels_c"] = Math.round(data.main.feels_like);
+          weatherData["temp_feels_f"] = Math.round(
+            data.main.feels_like * 1.8 + 32
+          );
+          weatherData["icon"] = data.weather[0].icon;
+          weatherData["id"] = data.weather[0].id;
+          weatherData["desc"] = data.weather[0].description;
 
-          setWeather(data);
+          setWeather(weatherData);
+          saveCity(weatherData);
         },
         () => {
           setLoading(false);
+          setGreetMsg("Hope it is correct 👍");
           setQuery("");
         },
         geoOptions

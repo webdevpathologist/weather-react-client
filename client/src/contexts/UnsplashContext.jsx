@@ -26,18 +26,22 @@ export const UnsplashProvider = ({ children }) => {
 
   useEffect(() => {
     async function fetchImage() {
-      const imageData = {
-        urls: {
-          regular:
-            "https://www.bing.com/th?id=OHR.MidsummerEve_EN-IN5378541716_1920x1080.jpg&rf=LaDigue_1920x1080.jpg",
-        },
-      };
+      if (process.env.NODE_ENV === "production"){
+        const imageQuery = weather && `${weather.city}`;
+        const imageData = await fetchUnsplashImage(imageQuery);
+        setImageURL(imageData?.urls?.regular);
+      }else{
+        const imageData = {
+          urls: {
+            regular:
+              "https://www.bing.com/th?id=OHR.MidsummerEve_EN-IN5378541716_1920x1080.jpg&rf=LaDigue_1920x1080.jpg",
+          },
+        };
+        setImageURL(imageData?.urls?.regular);
+      }  
 
-      // const imageQuery = weather && `${weather.name}`;
+      
 
-      // const imageData = await fetchUnsplashImage(imageQuery);
-
-      setImageURL(imageData?.urls?.regular);
     }
     weather?.weather && fetchImage();
   }, [weather]);
