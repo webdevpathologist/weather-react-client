@@ -7,7 +7,6 @@ import WeatherCardGeo from "./components/WeatherCardGeo";
 import Loader from "./components/Loader";
 
 function App() {
-
   const { loading, msg } = useContext(WeatherContext);
   // const { imageURL } = useContext(UnsplashContext);
   const { theme } = useContext(ThemeContext);

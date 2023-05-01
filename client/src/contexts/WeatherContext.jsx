@@ -87,7 +87,12 @@ export const WeatherProvider = ({ children }) => {
         Date.now() - e.data.timestamp > 1000 * 60 * 60) ||
       e.from === "voice"
     ) {
-      const city = e.from === "history" ? e.data.city : (e.from === "voice" ? (e.city).replace('.','') :query);
+      const city =
+        e.from === "history"
+          ? e.data.city
+          : e.from === "voice"
+          ? e.city.replace(".", "")
+          : query;
       setGreetMsg("Fetching Weather Data");
       const data = await fetchWeatherCity(city);
 

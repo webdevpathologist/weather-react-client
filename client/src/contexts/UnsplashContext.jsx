@@ -26,11 +26,11 @@ export const UnsplashProvider = ({ children }) => {
 
   useEffect(() => {
     async function fetchImage() {
-      if (process.env.NODE_ENV === "production"){
+      if (process.env.NODE_ENV === "production") {
         const imageQuery = weather && `${weather.city}`;
         const imageData = await fetchUnsplashImage(imageQuery);
         setImageURL(imageData?.urls?.regular);
-      }else{
+      } else {
         const imageData = {
           urls: {
             regular:
@@ -38,10 +38,7 @@ export const UnsplashProvider = ({ children }) => {
           },
         };
         setImageURL(imageData?.urls?.regular);
-      }  
-
-      
-
+      }
     }
     weather?.weather && fetchImage();
   }, [weather]);

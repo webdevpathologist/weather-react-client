@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
-import {BiMicrophone} from 'react-icons/bi';
-import {VscSearch} from 'react-icons/vsc';
+import { BiMicrophone } from "react-icons/bi";
+import { VscSearch } from "react-icons/vsc";
 
 import { WeatherContext } from "../contexts/WeatherContext";
 import { UnsplashContext } from "../contexts/UnsplashContext";
@@ -65,7 +65,7 @@ export default function WeatherCardGeo(props) {
           console.log(text);
           searchCity({
             from: "voice",
-            city:text
+            city: text,
           });
         }
       };
@@ -222,11 +222,11 @@ export default function WeatherCardGeo(props) {
                 onKeyPress={(e) => searchCity(e)}
               />
               <button
-                className="absolute w-10 mr-6 float-left"
+                className="absolute w-10 mr-44 lg:mr-8 float-left"
                 id="speechReg"
                 onClick={(e) => handleSpeech(e)}
               >
-                <BiMicrophone/>
+                <BiMicrophone />
               </button>
               <button
                 id="submit"
@@ -238,7 +238,7 @@ export default function WeatherCardGeo(props) {
                   })
                 }
               >
-                <VscSearch/>
+                <VscSearch />
               </button>
             </label>
 
