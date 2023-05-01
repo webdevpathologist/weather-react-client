@@ -37,7 +37,7 @@ export const WeatherProvider = ({ children }) => {
       .get(URL, {
         params: {
           q: query,
-          units: 'metric',
+          units: "metric",
           APPID: API_KEY,
         },
       })
@@ -61,7 +61,7 @@ export const WeatherProvider = ({ children }) => {
       params: {
         lat: lat,
         lon: lon,
-        units: 'metric',
+        units: "metric",
         APPID: API_KEY,
       },
     });
@@ -71,49 +71,50 @@ export const WeatherProvider = ({ children }) => {
   };
 
   const searchCity = async (e) => {
-    
     if (
       e.from === "history" &&
-      (Date.now() - e.data.timestamp < (1000 * 60 * 60))
+      Date.now() - e.data.timestamp < 1000 * 60 * 60
     ) {
-
       setGreetMsg("Showing Cached Data");
-      setWeather(()=>e.data);
+      setWeather(() => e.data);
       return null;
     }
 
-    if(e.key==='Enter' || e.from==='submit' || (
-      e.from === "history" &&
-      (Date.now() - e.data.timestamp > (1000 * 60 * 60))
-    )){
+    if (
+      e.key === "Enter" ||
+      e.from === "submit" ||
+      (e.from === "history" &&
+        Date.now() - e.data.timestamp > 1000 * 60 * 60) ||
+      e.from === "voice"
+    ) {
+      const city = e.from === "history" ? e.data.city : (e.from === "voice" ? (e.city).replace('.','') :query);
+      setGreetMsg("Fetching Weather Data");
+      const data = await fetchWeatherCity(city);
 
-    const city = e.from === "history" ? e.data.city : query;
-    setGreetMsg("Fetching Weather Data");
-    const data = await fetchWeatherCity(city);
+      if (data && Object.keys(data).length > 0) {
+        let weatherData = {};
+        weatherData["city"] = data.name;
+        weatherData["country"] = data && data.sys && data.sys.country;
+        weatherData["temp_c"] = Math.round(data.main.temp);
+        weatherData["temp_f"] = Math.round(data.main.temp * 1.8 + 32);
+        weatherData["temp_feels_c"] = Math.round(data.main.feels_like);
+        weatherData["temp_feels_f"] = Math.round(
+          data.main.feels_like * 1.8 + 32
+        );
+        weatherData["icon"] = data.weather[0].icon;
+        weatherData["id"] = data.weather[0].id;
+        weatherData["desc"] = data.weather[0].description;
 
-    if (data && Object.keys(data).length > 0) {
-      let weatherData = {};
-      weatherData["city"] = data.name;
-      weatherData["country"] = data && data.sys && data.sys.country;
-      weatherData["temp_c"] = Math.round(data.main.temp);
-      weatherData["temp_f"] = Math.round(data.main.temp * 1.8 + 32);
-      weatherData["temp_feels_c"] = Math.round(data.main.feels_like);
-      weatherData["temp_feels_f"] = Math.round(data.main.feels_like * 1.8 + 32);
-      weatherData["icon"] = data.weather[0].icon;
-      weatherData["id"] = data.weather[0].id;
-      weatherData["desc"] = data.weather[0].description;
-
-      setWeather(weatherData);
-      saveCity(weatherData);
-      setGreetMsg("Hope it is correct 👍");
-      setQuery("");
-      // e.target.blur();
-    } else {
-      setGreetMsg("Sorry, We couldn't find your city 🥴");
-      navigator.vibrate([500, 50, 300]);
-      setQuery("");
-    }
-
+        setWeather(weatherData);
+        saveCity(weatherData);
+        setGreetMsg("Hope it is correct 👍");
+        setQuery("");
+        // e.target.blur();
+      } else {
+        setGreetMsg("Sorry, We couldn't find your city 🥴");
+        navigator.vibrate([500, 50, 300]);
+        setQuery("");
+      }
     }
 
     return null;

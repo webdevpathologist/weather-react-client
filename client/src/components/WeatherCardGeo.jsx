@@ -1,4 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
+import {BiMicrophone} from 'react-icons/bi';
+import {VscSearch} from 'react-icons/vsc';
 
 import { WeatherContext } from "../contexts/WeatherContext";
 import { UnsplashContext } from "../contexts/UnsplashContext";
@@ -40,6 +42,44 @@ export default function WeatherCardGeo(props) {
     };
   }, [greetMsg]);
 
+  const handleSpeech = (e) => {
+    const button = document.getElementById("speechReg");
+
+    let listening = false;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (typeof SpeechRecognition !== "undefined") {
+      const recognition = new SpeechRecognition();
+
+      const stop = () => {
+        recognition.stop();
+      };
+
+      const start = () => {
+        recognition.start();
+      };
+
+      const onResult = (event) => {
+        for (const res of event.results) {
+          const text = res[0].transcript;
+          console.log(text);
+          searchCity({
+            from: "voice",
+            city:text
+          });
+        }
+      };
+      // recognition.continuous = true;
+      // recognition.interimResults = true;
+      recognition.addEventListener("result", onResult);
+      button.addEventListener("click", (event) => {
+        listening ? stop() : start();
+        listening = !listening;
+      });
+    } else {
+      setGreetMsg(() => "Sorry, We couldn't recognise your voice");
+    }
+  };
 
   return (
     <>
@@ -56,7 +96,7 @@ export default function WeatherCardGeo(props) {
         </div>
       ) : (
         <div className="">
-          {weather &&  (
+          {weather && weather?.city && (
             <div
               className={`relative overflow-hidden group rounded-2xl ${theme.textColor}  ${theme.cardColor} flex items-center justify-center lg:mt-16 drop-shadow-xl`}
             >
@@ -92,8 +132,12 @@ export default function WeatherCardGeo(props) {
                   <h1
                     className={`text-9xl font-bold ${theme.textColor} tracking-wide align-bottom`}
                   >
-                    {(weather && units==='metric') ? Math.round(weather.temp_c) :  Math.round(weather.temp_f)}
-                    <sup className="text-2xl  align-top">{units==='metric'? '°C' : '°F'}</sup>
+                    {weather && units === "metric"
+                      ? Math.round(weather.temp_c)
+                      : Math.round(weather.temp_f)}
+                    <sup className="text-2xl  align-top">
+                      {units === "metric" ? "°C" : "°F"}
+                    </sup>
                   </h1>
                 </div>
 
@@ -107,8 +151,11 @@ export default function WeatherCardGeo(props) {
                     alt={weather && weather.description}
                   />
                   <p className="tracking-wide">
-                    feels like {(weather && units==='metric') ? Math.round(weather.temp_feels_c) :  Math.round(weather.temp_feels_f)}
-                    {units==='metric'? '°C' : '°F'}
+                    feels like{" "}
+                    {weather && units === "metric"
+                      ? Math.round(weather.temp_feels_c)
+                      : Math.round(weather.temp_feels_f)}
+                    {units === "metric" ? "°C" : "°F"}
                     {/* with {weather && weather.description} */}
                   </p>
                 </div>
@@ -142,16 +189,28 @@ export default function WeatherCardGeo(props) {
           </div>
           {/* city search box & unit selection */}
           <div className="mt-4 flex items-center text-light justify-items-center text-black">
-            <label htmlFor="clear" className="cursor-pointer w-9 h-full items-center justify-center mr-3">
+            <label
+              htmlFor="clear"
+              className="cursor-pointer w-9 h-full items-center justify-center mr-3"
+            >
               <button
                 id="clear"
                 name="city_history_clear"
                 className="ml-1 py-1.5 px-1 bg-zinc-100 rounded-lg items-center justify-center border-2 w-full h-full"
-                onClick={() =>clearCities(()=>{setCities(getCities());})}
-              >🔄️</button>
+                onClick={() =>
+                  clearCities(() => {
+                    setCities(getCities());
+                  })
+                }
+              >
+                🔄️
+              </button>
             </label>
 
-            <label htmlFor="city-box" className="cursor-pointer w-5/6 h-4/6 flex justify-end items-center relative">
+            <label
+              htmlFor="city-box"
+              className="cursor-pointer w-5/6 h-4/6 flex flex-row justify-end items-center relative"
+            >
               <input
                 id="city-box"
                 name="city_name"
@@ -163,23 +222,36 @@ export default function WeatherCardGeo(props) {
                 onKeyPress={(e) => searchCity(e)}
               />
               <button
+                className="absolute w-10 mr-6 float-left"
+                id="speechReg"
+                onClick={(e) => handleSpeech(e)}
+              >
+                <BiMicrophone/>
+              </button>
+              <button
                 id="submit"
                 name="city_name"
-                className="absolute mr-2 w-10"
-                onClick={() => searchCity(
-                  {
-                    from:"submit"
-                  })}
-              >🔎</button>
+                className="absolute w-8"
+                onClick={() =>
+                  searchCity({
+                    from: "submit",
+                  })
+                }
+              >
+                <VscSearch/>
+              </button>
             </label>
 
-            <label htmlFor="temperatureToggle" className="relative h-8 w-16 md:w-14 cursor-pointer ml-2">
+            <label
+              htmlFor="temperatureToggle"
+              className="relative h-8 w-16 md:w-14 cursor-pointer ml-2"
+            >
               <input
                 type="checkbox"
                 id="temperatureToggle"
                 className="peer sr-only [&:checked_+_span_p[data-unchecked]]:hidden [&:checked_+_span_p[data-checked]]:block"
-                checked={units==='metric'? true : false}
-                onChange={(e)=>changeUnits(e)}
+                checked={units === "metric" ? true : false}
+                onChange={(e) => changeUnits(e)}
               />
 
               <span className="absolute inset-0 z-10 m-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-zinc-600 transition peer-checked:translate-x-6 peer-checked:text-indigo-600/60">
@@ -206,19 +278,23 @@ export default function WeatherCardGeo(props) {
 
               <span className="absolute inset-0 rounded-full bg-gray-300 transition peer-checked:bg-indigo-500"></span>
             </label>
-
           </div>
           {/* history of last 6 cities tag */}
           <div className="mt-4 grid grid-cols-3 gap-3 items-center text-light justify-items-center text-black">
-            {
-              cities.map((el,index)=>(
-                  <button key={index} className={` p-2 w-full ${theme.buttonColor}  ${theme.buttonTextColor} capitalize rounded-lg transition-full duration-300 hover:bg-slate-600 hover:text-zinc-200`} onClick={() => searchCity(
-                    {
-                      from:"history",
-                      data:el
-                    })}>{el.city}</button>
-              ))
-            }
+            {cities.map((el, index) => (
+              <button
+                key={index}
+                className={` p-2 w-full ${theme.buttonColor}  ${theme.buttonTextColor} capitalize rounded-lg transition-full duration-300 hover:bg-slate-600 hover:text-zinc-200`}
+                onClick={() =>
+                  searchCity({
+                    from: "history",
+                    data: el,
+                  })
+                }
+              >
+                {el.city}
+              </button>
+            ))}
           </div>
         </div>
       )}
